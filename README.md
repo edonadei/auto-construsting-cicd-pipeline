@@ -1,2 +1,2 @@
 # auto-construsting-cicd-pipeline
-Constructing an AWS full CI/CI automated pipeline 
+Constructing an AWS full CI/CD automated pipeline 

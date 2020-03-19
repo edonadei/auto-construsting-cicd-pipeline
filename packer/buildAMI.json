@@ -2,32 +2,40 @@
     "variables": {
         "region": "eu-west-1",
         "ssh_username": "ubuntu",
-        "base_ami": "ami-03ef731cc103c9f09",
         "instance_type": "t2.micro",
-        "subnet_id": "subnet-0ef916f3fe2feed88",
-        "temporary_security_group_source_cidrs": "52.213.204.85/32",
+        "temporary_security_group_source_cidrs": "{{user `ec2_ip`}}/32",
         "associate_public_ip_address": "true"
     },
     "builders": [
         {
             "type": "amazon-ebs",
             "region": "{{user `region`}}",
-            "subnet_id": "{{user `subnet_id`}}",
-            "source_ami": "{{user `base_ami`}}",
+	    "source_ami_filter": {
+    	    	"filters": {
+            		"virtualization-type": "hvm",
+     			"name": "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*",
+     			"root-device-type": "ebs"
+    	    	},
+    	    	"owners": [
+     			"099720109477"
+    	    	],
+    	    	"most_recent": true
+   	    },
             "instance_type": "{{user `instance_type`}}",
             "ssh_username": "{{user `ssh_username`}}",
-            "ami_name": "AMI-Apache-{{timestamp}}",
+            "ami_name": "{{user `env`}}-{{user `app_name`}}-AMI-{{ isotime \"01022006-150405\"}}",
             "temporary_security_group_source_cidrs": "{{user `temporary_security_group_source_cidrs`}}",
             "associate_public_ip_address": "{{user `associate_public_ip_address`}}",
             "tags": {
-                "Name": "Packer-Ansible"
+                "Name": "{{user `env`}}-{{user `app_name`}}-AMI"
             }
         }
     ],
     "provisioners": [
         {
             "type": "ansible",
-            "playbook_file": "./play.yml"
+            "playbook_file": "../Ansible/play.yml",
+            "extra_arguments": ["-e", "env={{user `env`}} app_repo={{user `app_repo`}} app_port={{user `app_port`}}"]
         }
     ]
 }

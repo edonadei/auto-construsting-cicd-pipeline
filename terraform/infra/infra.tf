@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 variable "env" {
-  type    = string
+  type = string
   default = "dev"
 }
 
